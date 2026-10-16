@@ -1,0 +1,7 @@
+# Black Label Lifestyle — Modern Open Indexing Architecture
+User-agent: *
+Allow: /
+Disallow: /admin
+
+# Sitemap Index
+Sitemap: https://blacklabel.life/sitemap.xml

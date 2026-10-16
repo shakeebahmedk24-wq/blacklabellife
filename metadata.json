@@ -1,0 +1,8 @@
+{
+  "name": "Black Label Lifestyle",
+  "description": "The philosophy of sovereign living, intentional focus, architectural quietude, and eight dimensional inquiries anchored in Millennium Tower, San Francisco.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
