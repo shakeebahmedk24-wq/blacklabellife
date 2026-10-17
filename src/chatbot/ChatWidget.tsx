@@ -189,10 +189,13 @@ export const ChatWidget: React.FC = () => {
             : m
         )
       );
-    } catch {
-      // Friendly error state
+    } catch (err: unknown) {
+      console.error('[Black Label Concierge] Error generating response:', err);
+      const errMsg = err instanceof Error ? err.message : '';
       setErrorMessage(
-        "I'm having trouble connecting. Please email concierge@blacklabel.life and our team will respond within two hours."
+        errMsg && errMsg.includes('concierge@blacklabel.life')
+          ? errMsg
+          : "I'm having trouble connecting to the concierge desk right now. Please email concierge@blacklabel.life or submit an inquiry at /concierge."
       );
       // Remove empty placeholder if nothing was streamed
       setMessages((prev) => prev.filter((m) => m.id !== botMessageId || m.text.length > 0));

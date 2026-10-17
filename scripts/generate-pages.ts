@@ -1338,12 +1338,16 @@ function generateHomePage(): string {
         </p>
 
         <!-- Buttons -->
-        <div class="animate-hero-cta pt-4 flex flex-col sm:flex-row items-center justify-center gap-5 sm:gap-7">
-          <a href="#brands" id="hero-explore-btn" class="w-full sm:w-auto px-9 py-4 text-xs sm:text-sm font-semibold uppercase tracking-[0.22em] text-[#faf8f5] border border-[#c5a059]/60 hover:bg-[#c5a059]/15 hover:border-[#c5a059] transition-all duration-300 rounded-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#c5a059]">
+        <div class="animate-hero-cta pt-4 flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6">
+          <a href="/events" id="hero-events-btn" class="w-full sm:w-auto px-9 py-4 text-xs sm:text-sm font-semibold uppercase tracking-[0.22em] text-[#060709] bg-[#c5a059] hover:bg-[#dfc182] transition-all duration-300 rounded-sm shadow-[0_0_22px_rgba(197,160,89,0.35)] hover:shadow-[0_0_28px_rgba(197,160,89,0.55)] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#c5a059] inline-flex items-center justify-center gap-2 group">
+            <span>Plan Your Event (10–50 Guests)</span>
+            <span class="transition-transform duration-200 group-hover:translate-x-1 font-mono">→</span>
+          </a>
+          <a href="#brands" id="hero-explore-btn" class="w-full sm:w-auto px-8 py-4 text-xs sm:text-sm font-semibold uppercase tracking-[0.22em] text-[#faf8f5] border border-[#c5a059]/60 hover:bg-[#c5a059]/15 hover:border-[#c5a059] transition-all duration-300 rounded-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#c5a059]">
             Explore 8 Inquiries ↓
           </a>
-          <a href="/concierge" id="hero-concierge-btn" class="w-full sm:w-auto px-9 py-4 text-xs sm:text-sm font-semibold uppercase tracking-[0.22em] text-[#060709] bg-[#c5a059] hover:bg-[#dfc182] transition-all duration-300 rounded-sm shadow-[0_0_22px_rgba(197,160,89,0.35)] hover:shadow-[0_0_28px_rgba(197,160,89,0.55)] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#c5a059]">
-            Sanctuary & Dialogue
+          <a href="/concierge" id="hero-concierge-btn" class="w-full sm:w-auto px-7 py-4 text-xs sm:text-sm font-semibold uppercase tracking-[0.22em] text-[#dcd6ca] hover:text-[#c5a059] border border-white/20 hover:border-[#c5a059]/60 transition-all duration-300 rounded-sm">
+            Concierge Desk
           </a>
         </div>
 
@@ -2175,12 +2179,21 @@ function generateDivisionPage(div: DivisionPageConfig): string {
             </p>
 
             <div class="pt-3 flex flex-wrap items-center gap-4 animate-inner-hero-cta">
-              <a href="/concierge" class="inline-flex items-center justify-center px-7 py-3.5 text-xs font-semibold uppercase tracking-[0.18em] text-[#060709] bg-[#c5a059] hover:bg-[#dfc182] transition-colors rounded-sm shadow-md focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#c5a059]">
-                Direct Correspondence
-              </a>
-              <a href="#services" class="text-xs uppercase tracking-[0.18em] text-[#dcd6ca] hover:text-[#c5a059] px-5 py-3.5 border border-white/20 hover:border-[#c5a059]/60 rounded-sm transition-colors">
-                Expressions of Principle ↓
-              </a>
+              ${div.slug === 'entertainment' ? `
+                <a href="/entertainment/plan" class="inline-flex items-center justify-center px-7 py-3.5 text-xs font-semibold uppercase tracking-[0.18em] text-[#060709] bg-[#c5a059] hover:bg-[#dfc182] transition-colors rounded-sm shadow-md focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#c5a059] group">
+                  Plan Your Event <span class="ml-1.5 transition-transform duration-200 group-hover:translate-x-1 font-mono">→</span>
+                </a>
+                <a href="/concierge" class="text-xs uppercase tracking-[0.18em] text-[#dcd6ca] hover:text-[#c5a059] px-5 py-3.5 border border-white/20 hover:border-[#c5a059]/60 rounded-sm transition-colors">
+                  Direct Correspondence
+                </a>
+              ` : `
+                <a href="/concierge" class="inline-flex items-center justify-center px-7 py-3.5 text-xs font-semibold uppercase tracking-[0.18em] text-[#060709] bg-[#c5a059] hover:bg-[#dfc182] transition-colors rounded-sm shadow-md focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#c5a059]">
+                  Direct Correspondence
+                </a>
+                <a href="#services" class="text-xs uppercase tracking-[0.18em] text-[#dcd6ca] hover:text-[#c5a059] px-5 py-3.5 border border-white/20 hover:border-[#c5a059]/60 rounded-sm transition-colors">
+                  Expressions of Principle ↓
+                </a>
+              `}
             </div>
           </div>
 
@@ -2401,19 +2414,924 @@ function generateDivisionPage(div: DivisionPageConfig): string {
 
 /**
  * ============================================================================
- * 3. CONCIERGE DESK COMPILER (generateConciergePage)
+ * 2B. PRIVATE EVENT PLANNING & INTAKE COMPILER (generateEventPlanningPage)
  * ============================================================================
- * Owner & Developer Guide:
- * Generates the private client inquiry terminal (/concierge).
- * 
- * CORE SECTIONS:
- * - Concierge Hero: Millennium Tower twilight backdrop, concierge badge, SLA timer.
- * - Architectural Elevation Schemes: Interactive tabs representing Millennium Tower
- *   tiers (Penthouse Level 60, Private Residences Level 48, Club Level 10, Courtyard Level 1).
- * - Priority Intake Mandate Terminal: Direct dispatch form routing client
- *   requests to concierge@blacklabel.life with real-time encrypted reference code.
+ * Generates the bespoke event specification page (/entertainment/plan and /events).
+ * Collects client info, event type (birthday, wedding, anniversary, private party, other),
+ * venue requirements (have space vs need venue), guest count (10-50 people),
+ * location, date/time, and bespoke additional requirements.
  * ============================================================================
  */
+function generateEventPlanningPage(): string {
+  const jsonLd = [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'Service',
+      name: 'Black Label Private Event Planning & In-Residence Dining',
+      url: 'https://blacklabel.life/entertainment/plan',
+      description: 'Curate bespoke private events, birthdays, weddings, anniversaries, and dinners for 10 to 50 guests in San Francisco.',
+      provider: {
+        '@type': 'Organization',
+        name: 'Black Label Entertainment',
+        email: 'concierge@blacklabel.life',
+        address: {
+          '@type': 'PostalAddress',
+          streetAddress: 'Millennium Tower, 301 Mission St',
+          addressLocality: 'San Francisco',
+          addressRegion: 'CA',
+          postalCode: '94105',
+          addressCountry: 'US',
+        },
+      },
+      areaServed: {
+        '@type': 'AdministrativeArea',
+        name: 'San Francisco Bay Area',
+      },
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        {
+          '@type': 'ListItem',
+          position: 1,
+          name: 'Home',
+          item: 'https://blacklabel.life/',
+        },
+        {
+          '@type': 'ListItem',
+          position: 2,
+          name: 'Entertainment',
+          item: 'https://blacklabel.life/entertainment',
+        },
+        {
+          '@type': 'ListItem',
+          position: 3,
+          name: 'Plan Your Event',
+          item: 'https://blacklabel.life/entertainment/plan',
+        },
+      ],
+    },
+  ];
+
+  return `<!doctype html>
+<html lang="en" class="scroll-smooth">
+<head>
+  ${renderHeadTags({
+    title: 'Plan Your Private Event (10-50 Guests) · Black Label Entertainment',
+    description: 'Submit your private event requirements for birthdays, weddings, anniversaries, and in-residence dinners for 10 to 50 guests in San Francisco. A Black Label event planner will contact you directly.',
+    canonicalUrl: 'https://blacklabel.life/entertainment/plan',
+    jsonLd: jsonLd,
+    preloadImage: {
+      href: '/assets/images/dining.webp',
+      mobileHref: '/assets/images/dining-mobile.webp',
+    },
+  })}
+</head>
+<body class="bg-[#060709] text-[#e6e0d4] antialiased selection:bg-[#c5a059] selection:text-[#060709]">
+  ${renderSharedHeader('/entertainment')}
+
+  <main id="main-content" class="min-h-screen">
+    <!-- HERO HEADER & BREADCRUMBS -->
+    <section class="relative pt-32 pb-16 sm:pb-24 border-b border-white/[0.08] overflow-hidden">
+      <!-- Background Luxury Visual Asset -->
+      <div class="absolute inset-0 pointer-events-none">
+        <picture>
+          <source media="(max-width: 768px)" srcset="/assets/images/dining-mobile.webp" type="image/webp" />
+          <source srcset="/assets/images/dining.webp" type="image/webp" />
+          <img src="/assets/images/dining.jpg" alt="Private Dining and Event Staging" width="1920" height="1080" fetchpriority="high" loading="eager" decoding="async" class="w-full h-full object-cover filter brightness-[0.22] contrast-110" />
+        </picture>
+        <div class="absolute inset-0 bg-gradient-to-t from-[#060709] via-[#060709]/85 to-[#060709]/70"></div>
+        <div class="absolute inset-0 bg-radial-hero"></div>
+      </div>
+
+      <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-10">
+        <!-- Breadcrumbs -->
+        <nav aria-label="Breadcrumb" class="mb-6 flex items-center gap-2 text-xs font-mono text-[#a69f91] animate-inner-hero-tag">
+          <a href="/" class="hover:text-[#c5a059] transition-colors">Home</a>
+          <span class="text-white/30">/</span>
+          <a href="/entertainment" class="hover:text-[#c5a059] transition-colors">02 Entertainment</a>
+          <span class="text-white/30">/</span>
+          <span class="text-[#c5a059]">Plan Your Event</span>
+        </nav>
+
+        <div class="max-w-3xl space-y-6">
+          <div class="inline-flex items-center gap-2.5 px-3 py-1 text-[11px] font-mono uppercase tracking-[0.22em] text-[#faf8f5] bg-[#060709]/80 backdrop-blur-md border border-[#c5a059]/40 rounded-sm">
+            <span class="w-2 h-2 rounded-full bg-[#c5a059] animate-pulse"></span>
+            <span>02 ENTERTAINMENT · EVENT CONSULTATION INTAKE</span>
+          </div>
+
+          <h1 class="text-4xl sm:text-5xl lg:text-6xl font-serif text-[#faf8f5] leading-[1.12] font-light tracking-tight">
+            Curate an Unhurried Gathering
+          </h1>
+
+          <p class="text-base sm:text-lg text-[#dcd6ca]/90 leading-relaxed font-light max-w-2xl">
+            For intimate occasions of 10 to 50 guests. Share your requirements below—from space sourcing to culinary tasting brigades and sommelier cellar pairings. Our dedicated event planner will contact you directly to discuss every detail.
+          </p>
+
+          <!-- Executive Telemetry Strip -->
+          <div class="pt-2 flex flex-wrap gap-3 sm:gap-6 text-[11px] font-mono text-[#a69f91]">
+            <div class="flex items-center gap-2 px-3 py-1.5 bg-white/[0.03] border border-white/10 rounded-sm">
+              <span class="text-[#c5a059]">GUEST CAPACITY:</span>
+              <span class="text-[#faf8f5]">10 – 50 Attendees</span>
+            </div>
+            <div class="flex items-center gap-2 px-3 py-1.5 bg-white/[0.03] border border-white/10 rounded-sm">
+              <span class="text-[#c5a059]">SERVICE RADIUS:</span>
+              <span class="text-[#faf8f5]">San Francisco & Bay Area</span>
+            </div>
+            <div class="flex items-center gap-2 px-3 py-1.5 bg-white/[0.03] border border-white/10 rounded-sm">
+              <span class="text-[#c5a059]">DIRECT SLA:</span>
+              <span class="text-[#faf8f5]">Within 2 Hours</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- EVENT SPECIFICATION WORKFLOW SECTION -->
+    <section class="py-16 sm:py-24 relative">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-start">
+          
+          <!-- LEFT COLUMN: MAIN INTAKE FORM (8 COLS) -->
+          <div class="lg:col-span-8">
+            <form id="event-planning-form" class="space-y-12 bg-[#090b0e] border border-white/[0.08] p-6 sm:p-10 rounded-xl shadow-2xl relative">
+              
+              <!-- 1. CLIENT INFORMATION -->
+              <div class="space-y-6 pb-10 border-b border-white/[0.08]" data-form-step="1">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-3">
+                    <span class="flex items-center justify-center w-7 h-7 rounded-full bg-[#c5a059]/15 border border-[#c5a059]/40 text-[#c5a059] font-mono text-xs font-semibold">
+                      01
+                    </span>
+                    <h2 class="text-xl sm:text-2xl font-serif text-[#faf8f5] tracking-wide">
+                      Client Contact Information
+                    </h2>
+                  </div>
+                  <span class="text-[10px] font-mono text-[#a69f91] uppercase tracking-wider">Required Fields *</span>
+                </div>
+                <p class="text-xs sm:text-sm text-[#a69f91] leading-relaxed">
+                  Your direct liaison details for event coordination and confidential correspondence.
+                </p>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 pt-2">
+                  <!-- Name -->
+                  <div class="space-y-2 sm:col-span-2">
+                    <label for="client-name" class="block text-xs font-mono uppercase tracking-[0.16em] text-[#faf8f5]">
+                      Full Name *
+                    </label>
+                    <input
+                      type="text"
+                      id="client-name"
+                      name="clientName"
+                      required
+                      placeholder="e.g. Julian Vance"
+                      class="w-full px-4 py-3 bg-[#11141c] border border-white/10 rounded-md text-[#faf8f5] placeholder-[#a69f91]/40 text-sm focus:outline-none focus:border-[#c5a059] focus:ring-1 focus:ring-[#c5a059] transition-colors"
+                    />
+                  </div>
+
+                  <!-- Email -->
+                  <div class="space-y-2">
+                    <label for="client-email" class="block text-xs font-mono uppercase tracking-[0.16em] text-[#faf8f5]">
+                      Email Address *
+                    </label>
+                    <input
+                      type="email"
+                      id="client-email"
+                      name="clientEmail"
+                      required
+                      placeholder="e.g. julian@vance-holdings.com"
+                      class="w-full px-4 py-3 bg-[#11141c] border border-white/10 rounded-md text-[#faf8f5] placeholder-[#a69f91]/40 text-sm focus:outline-none focus:border-[#c5a059] focus:ring-1 focus:ring-[#c5a059] transition-colors"
+                    />
+                  </div>
+
+                  <!-- Phone Number -->
+                  <div class="space-y-2">
+                    <label for="client-phone" class="block text-xs font-mono uppercase tracking-[0.16em] text-[#faf8f5]">
+                      Phone Number *
+                    </label>
+                    <input
+                      type="tel"
+                      id="client-phone"
+                      name="clientPhone"
+                      required
+                      placeholder="e.g. (415) 890-2400"
+                      class="w-full px-4 py-3 bg-[#11141c] border border-white/10 rounded-md text-[#faf8f5] placeholder-[#a69f91]/40 text-sm focus:outline-none focus:border-[#c5a059] focus:ring-1 focus:ring-[#c5a059] transition-colors"
+                    />
+                  </div>
+
+                  <!-- Preferred Contact Channel -->
+                  <div class="space-y-2 sm:col-span-2 pt-1">
+                    <span class="block text-xs font-mono uppercase tracking-[0.16em] text-[#a69f91]">
+                      Preferred Contact Channel
+                    </span>
+                    <div class="flex flex-wrap gap-3">
+                      <label class="flex items-center gap-2.5 px-3.5 py-2 rounded-md bg-[#11141c] border border-white/10 hover:border-[#c5a059]/50 cursor-pointer text-xs transition-colors">
+                        <input type="radio" name="contactPreference" value="Phone Call" checked class="accent-[#c5a059]" />
+                        <span class="text-[#faf8f5]">Direct Phone Call</span>
+                      </label>
+                      <label class="flex items-center gap-2.5 px-3.5 py-2 rounded-md bg-[#11141c] border border-white/10 hover:border-[#c5a059]/50 cursor-pointer text-xs transition-colors">
+                        <input type="radio" name="contactPreference" value="Email" class="accent-[#c5a059]" />
+                        <span class="text-[#faf8f5]">Confidential Email</span>
+                      </label>
+                      <label class="flex items-center gap-2.5 px-3.5 py-2 rounded-md bg-[#11141c] border border-white/10 hover:border-[#c5a059]/50 cursor-pointer text-xs transition-colors">
+                        <input type="radio" name="contactPreference" value="Text / WhatsApp" class="accent-[#c5a059]" />
+                        <span class="text-[#faf8f5]">Text / WhatsApp</span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 2. TYPE OF EVENT -->
+              <div class="space-y-6 pb-10 border-b border-white/[0.08]" data-form-step="2">
+                <div class="flex items-center gap-3">
+                  <span class="flex items-center justify-center w-7 h-7 rounded-full bg-[#c5a059]/15 border border-[#c5a059]/40 text-[#c5a059] font-mono text-xs font-semibold">
+                    02
+                  </span>
+                  <h2 class="text-xl sm:text-2xl font-serif text-[#faf8f5] tracking-wide">
+                    Type of Event *
+                  </h2>
+                </div>
+                <p class="text-xs sm:text-sm text-[#a69f91] leading-relaxed">
+                  Select the nature of your gathering. Every category receives a custom-tailored staging and culinary concept.
+                </p>
+
+                <!-- Visual Selection Cards -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 pt-2" id="event-type-container">
+                  <!-- Birthday -->
+                  <label class="event-type-card p-4 rounded-lg bg-[#11141c] border border-white/10 hover:border-[#c5a059]/60 cursor-pointer transition-all duration-200 relative group flex flex-col justify-between">
+                    <input type="radio" name="eventType" value="Birthday" checked class="sr-only event-type-radio" />
+                    <div>
+                      <div class="flex items-center justify-between mb-2">
+                        <span class="text-[10px] font-mono uppercase tracking-widest text-[#c5a059]">Milestone</span>
+                        <span class="w-4 h-4 rounded-full border border-white/30 flex items-center justify-center card-radio-indicator group-hover:border-[#c5a059]">
+                          <span class="w-2 h-2 rounded-full bg-[#c5a059] indicator-dot"></span>
+                        </span>
+                      </div>
+                      <h3 class="text-base font-serif text-[#faf8f5] font-medium group-hover:text-[#c5a059] transition-colors">Birthday</h3>
+                      <p class="text-xs text-[#a69f91] mt-1 leading-relaxed">Milestone birthdays, private seated celebrations, bespoke chef menus.</p>
+                    </div>
+                  </label>
+
+                  <!-- Wedding -->
+                  <label class="event-type-card p-4 rounded-lg bg-[#11141c] border border-white/10 hover:border-[#c5a059]/60 cursor-pointer transition-all duration-200 relative group flex flex-col justify-between">
+                    <input type="radio" name="eventType" value="Wedding" class="sr-only event-type-radio" />
+                    <div>
+                      <div class="flex items-center justify-between mb-2">
+                        <span class="text-[10px] font-mono uppercase tracking-widest text-[#c5a059]">Intimate Ceremony</span>
+                        <span class="w-4 h-4 rounded-full border border-white/30 flex items-center justify-center card-radio-indicator group-hover:border-[#c5a059]">
+                          <span class="w-2 h-2 rounded-full bg-[#c5a059] indicator-dot hidden"></span>
+                        </span>
+                      </div>
+                      <h3 class="text-base font-serif text-[#faf8f5] font-medium group-hover:text-[#c5a059] transition-colors">Wedding</h3>
+                      <p class="text-xs text-[#a69f91] mt-1 leading-relaxed">Intimate weddings, rehearsal dinners, welcome receptions up to 50 guests.</p>
+                    </div>
+                  </label>
+
+                  <!-- Anniversary -->
+                  <label class="event-type-card p-4 rounded-lg bg-[#11141c] border border-white/10 hover:border-[#c5a059]/60 cursor-pointer transition-all duration-200 relative group flex flex-col justify-between">
+                    <input type="radio" name="eventType" value="Anniversary" class="sr-only event-type-radio" />
+                    <div>
+                      <div class="flex items-center justify-between mb-2">
+                        <span class="text-[10px] font-mono uppercase tracking-widest text-[#c5a059]">Commemorative</span>
+                        <span class="w-4 h-4 rounded-full border border-white/30 flex items-center justify-center card-radio-indicator group-hover:border-[#c5a059]">
+                          <span class="w-2 h-2 rounded-full bg-[#c5a059] indicator-dot hidden"></span>
+                        </span>
+                      </div>
+                      <h3 class="text-base font-serif text-[#faf8f5] font-medium group-hover:text-[#c5a059] transition-colors">Anniversary</h3>
+                      <p class="text-xs text-[#a69f91] mt-1 leading-relaxed">Milestone years, rare vintage cellar pairings, romantic candlelit dinners.</p>
+                    </div>
+                  </label>
+
+                  <!-- Private Party -->
+                  <label class="event-type-card p-4 rounded-lg bg-[#11141c] border border-white/10 hover:border-[#c5a059]/60 cursor-pointer transition-all duration-200 relative group flex flex-col justify-between">
+                    <input type="radio" name="eventType" value="Private Party" class="sr-only event-type-radio" />
+                    <div>
+                      <div class="flex items-center justify-between mb-2">
+                        <span class="text-[10px] font-mono uppercase tracking-widest text-[#c5a059]">Social Salon</span>
+                        <span class="w-4 h-4 rounded-full border border-white/30 flex items-center justify-center card-radio-indicator group-hover:border-[#c5a059]">
+                          <span class="w-2 h-2 rounded-full bg-[#c5a059] indicator-dot hidden"></span>
+                        </span>
+                      </div>
+                      <h3 class="text-base font-serif text-[#faf8f5] font-medium group-hover:text-[#c5a059] transition-colors">Private Party</h3>
+                      <p class="text-xs text-[#a69f91] mt-1 leading-relaxed">Cocktail parties, twilight salons, holiday soirees, family reunions.</p>
+                    </div>
+                  </label>
+
+                  <!-- Another Event -->
+                  <label class="event-type-card p-4 rounded-lg bg-[#11141c] border border-white/10 hover:border-[#c5a059]/60 cursor-pointer transition-all duration-200 relative group sm:col-span-2 lg:col-span-2 flex flex-col justify-between">
+                    <input type="radio" name="eventType" value="Another Event" class="sr-only event-type-radio" />
+                    <div>
+                      <div class="flex items-center justify-between mb-2">
+                        <span class="text-[10px] font-mono uppercase tracking-widest text-[#c5a059]">Bespoke Occasion</span>
+                        <span class="w-4 h-4 rounded-full border border-white/30 flex items-center justify-center card-radio-indicator group-hover:border-[#c5a059]">
+                          <span class="w-2 h-2 rounded-full bg-[#c5a059] indicator-dot hidden"></span>
+                        </span>
+                      </div>
+                      <h3 class="text-base font-serif text-[#faf8f5] font-medium group-hover:text-[#c5a059] transition-colors">Another Event</h3>
+                      <p class="text-xs text-[#a69f91] mt-1 leading-relaxed">Executive retreats, investment fund closings, art reveals, or custom gatherings.</p>
+                    </div>
+                  </label>
+                </div>
+
+                <!-- Custom Event Name Field (Shown if 'Another Event' is selected) -->
+                <div id="custom-event-type-wrapper" class="hidden pt-2 space-y-2">
+                  <label for="custom-event-type" class="block text-xs font-mono uppercase tracking-[0.16em] text-[#c5a059]">
+                    Please Specify Your Event Type *
+                  </label>
+                  <input
+                    type="text"
+                    id="custom-event-type"
+                    name="customEventType"
+                    placeholder="e.g. Founders Dinner, Art Gallery Reception, Wine Tasting Salon"
+                    class="w-full px-4 py-3 bg-[#11141c] border border-[#c5a059]/50 rounded-md text-[#faf8f5] placeholder-[#a69f91]/40 text-sm focus:outline-none focus:border-[#c5a059] focus:ring-1 focus:ring-[#c5a059] transition-colors"
+                  />
+                </div>
+              </div>
+
+              <!-- 3. VENUE REQUIREMENTS -->
+              <div class="space-y-6 pb-10 border-b border-white/[0.08]" data-form-step="3">
+                <div class="flex items-center gap-3">
+                  <span class="flex items-center justify-center w-7 h-7 rounded-full bg-[#c5a059]/15 border border-[#c5a059]/40 text-[#c5a059] font-mono text-xs font-semibold">
+                    03
+                  </span>
+                  <h2 class="text-xl sm:text-2xl font-serif text-[#faf8f5] tracking-wide">
+                    Venue Requirements *
+                  </h2>
+                </div>
+                <p class="text-xs sm:text-sm text-[#a69f91] leading-relaxed">
+                  Do you already have a venue, or do you require assistance sourcing a private setting?
+                </p>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5 pt-2">
+                  <label class="venue-card p-4 rounded-lg bg-[#11141c] border border-white/10 hover:border-[#c5a059]/60 cursor-pointer transition-all duration-200 flex flex-col justify-between group">
+                    <input type="radio" name="venueStatus" value="Already Have Venue" checked class="sr-only venue-radio" />
+                    <div>
+                      <div class="flex items-center justify-between mb-2">
+                        <span class="text-[10px] font-mono uppercase tracking-widest text-[#c5a059]">Residence</span>
+                        <span class="w-4 h-4 rounded-full border border-white/30 flex items-center justify-center venue-radio-indicator group-hover:border-[#c5a059]">
+                          <span class="w-2 h-2 rounded-full bg-[#c5a059] indicator-dot"></span>
+                        </span>
+                      </div>
+                      <h3 class="text-sm font-serif text-[#faf8f5] font-medium group-hover:text-[#c5a059] transition-colors">I Have a Space</h3>
+                      <p class="text-xs text-[#a69f91] mt-1 leading-relaxed">Hosting at private residence, penthouse, estate, or existing leased space.</p>
+                    </div>
+                  </label>
+
+                  <label class="venue-card p-4 rounded-lg bg-[#11141c] border border-white/10 hover:border-[#c5a059]/60 cursor-pointer transition-all duration-200 flex flex-col justify-between group">
+                    <input type="radio" name="venueStatus" value="Need Help Finding Venue" class="sr-only venue-radio" />
+                    <div>
+                      <div class="flex items-center justify-between mb-2">
+                        <span class="text-[10px] font-mono uppercase tracking-widest text-[#c5a059]">Curated Sourcing</span>
+                        <span class="w-4 h-4 rounded-full border border-white/30 flex items-center justify-center venue-radio-indicator group-hover:border-[#c5a059]">
+                          <span class="w-2 h-2 rounded-full bg-[#c5a059] indicator-dot hidden"></span>
+                        </span>
+                      </div>
+                      <h3 class="text-sm font-serif text-[#faf8f5] font-medium group-hover:text-[#c5a059] transition-colors">Need Venue Sourcing</h3>
+                      <p class="text-xs text-[#a69f91] mt-1 leading-relaxed">Need Black Label to source Millennium Tower salon, penthouse, or private estate.</p>
+                    </div>
+                  </label>
+
+                  <label class="venue-card p-4 rounded-lg bg-[#11141c] border border-white/10 hover:border-[#c5a059]/60 cursor-pointer transition-all duration-200 flex flex-col justify-between group">
+                    <input type="radio" name="venueStatus" value="Undecided" class="sr-only venue-radio" />
+                    <div>
+                      <div class="flex items-center justify-between mb-2">
+                        <span class="text-[10px] font-mono uppercase tracking-widest text-[#c5a059]">Flexible</span>
+                        <span class="w-4 h-4 rounded-full border border-white/30 flex items-center justify-center venue-radio-indicator group-hover:border-[#c5a059]">
+                          <span class="w-2 h-2 rounded-full bg-[#c5a059] indicator-dot hidden"></span>
+                        </span>
+                      </div>
+                      <h3 class="text-sm font-serif text-[#faf8f5] font-medium group-hover:text-[#c5a059] transition-colors">Undecided / Open</h3>
+                      <p class="text-xs text-[#a69f91] mt-1 leading-relaxed">Exploring options with event planner based on guest count and menu.</p>
+                    </div>
+                  </label>
+                </div>
+
+                <!-- Existing Venue Details (Optional) -->
+                <div id="venue-details-wrapper" class="pt-2 space-y-2">
+                  <label for="venue-notes" class="block text-xs font-mono uppercase tracking-[0.16em] text-[#faf8f5]">
+                    Space Details / Venue Name (Optional)
+                  </label>
+                  <input
+                    type="text"
+                    id="venue-notes"
+                    name="venueNotes"
+                    placeholder="e.g. Millennium Tower Unit 48A, private residence in Pacific Heights, or Napa valley estate"
+                    class="w-full px-4 py-3 bg-[#11141c] border border-white/10 rounded-md text-[#faf8f5] placeholder-[#a69f91]/40 text-sm focus:outline-none focus:border-[#c5a059] focus:ring-1 focus:ring-[#c5a059] transition-colors"
+                  />
+                </div>
+              </div>
+
+              <!-- 4. NUMBER OF GUESTS (10 TO 50 PEOPLE) -->
+              <div class="space-y-6 pb-10 border-b border-white/[0.08]" data-form-step="4">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-3">
+                    <span class="flex items-center justify-center w-7 h-7 rounded-full bg-[#c5a059]/15 border border-[#c5a059]/40 text-[#c5a059] font-mono text-xs font-semibold">
+                      04
+                    </span>
+                    <h2 class="text-xl sm:text-2xl font-serif text-[#faf8f5] tracking-wide">
+                      Number of Guests *
+                    </h2>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span class="text-xs font-mono text-[#a69f91]">Selection:</span>
+                    <span id="guest-count-badge" class="px-3 py-1 rounded bg-[#c5a059] text-[#060709] font-mono font-bold text-sm">
+                      20 Guests
+                    </span>
+                  </div>
+                </div>
+
+                <p class="text-xs sm:text-sm text-[#a69f91] leading-relaxed">
+                  Black Label Entertainment specializes in intimate gatherings between <strong class="text-[#faf8f5]">10 and 50 people</strong> to maintain Michelin-caliber brigade execution, bespoke plateware, and personalized sommelier service.
+                </p>
+
+                <!-- Interactive Range Slider & Number Box -->
+                <div class="bg-[#11141c] p-6 rounded-lg border border-white/10 space-y-6">
+                  <div class="flex flex-col sm:flex-row items-center gap-6">
+                    <div class="w-full flex-1 space-y-2">
+                      <div class="flex justify-between text-xs font-mono text-[#a69f91]">
+                        <span>Min: 10 Guests</span>
+                        <span class="text-[#c5a059]">Intimate Scale</span>
+                        <span>Max: 50 Guests</span>
+                      </div>
+                      <input
+                        type="range"
+                        id="guest-slider"
+                        name="guestSlider"
+                        min="10"
+                        max="50"
+                        value="20"
+                        step="1"
+                        class="w-full h-2 bg-white/20 rounded-lg appearance-none cursor-pointer accent-[#c5a059]"
+                      />
+                    </div>
+
+                    <div class="flex items-center gap-2 shrink-0">
+                      <label for="guest-input" class="text-xs font-mono uppercase text-[#a69f91]">Attendees:</label>
+                      <input
+                        type="number"
+                        id="guest-input"
+                        name="guestCount"
+                        min="10"
+                        max="50"
+                        value="20"
+                        required
+                        class="w-20 px-3 py-2 bg-[#090b0e] border border-[#c5a059]/50 rounded text-center text-[#faf8f5] font-mono font-bold text-base focus:outline-none focus:border-[#c5a059]"
+                      />
+                    </div>
+                  </div>
+
+                  <!-- Quick Preset Buttons -->
+                  <div class="space-y-2 pt-2 border-t border-white/[0.06]">
+                    <span class="block text-[11px] font-mono uppercase tracking-wider text-[#a69f91]">
+                      Or choose an intimate format preset:
+                    </span>
+                    <div class="flex flex-wrap gap-2.5">
+                      <button type="button" data-preset-guests="12" class="guest-preset-btn px-3 py-1.5 text-xs font-mono rounded bg-white/[0.04] border border-white/10 hover:border-[#c5a059] text-[#faf8f5] transition-colors">
+                        10–15 (Chef's Tasting Table)
+                      </button>
+                      <button type="button" data-preset-guests="20" class="guest-preset-btn active px-3 py-1.5 text-xs font-mono rounded bg-[#c5a059]/20 border border-[#c5a059] text-[#c5a059] transition-colors">
+                        16–25 (Private Dining Salon)
+                      </button>
+                      <button type="button" data-preset-guests="32" class="guest-preset-btn px-3 py-1.5 text-xs font-mono rounded bg-white/[0.04] border border-white/10 hover:border-[#c5a059] text-[#faf8f5] transition-colors">
+                        26–35 (Milestone Celebration)
+                      </button>
+                      <button type="button" data-preset-guests="48" class="guest-preset-btn px-3 py-1.5 text-xs font-mono rounded bg-white/[0.04] border border-white/10 hover:border-[#c5a059] text-[#faf8f5] transition-colors">
+                        36–50 (Full Standing Reception)
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 5. EVENT LOCATION -->
+              <div class="space-y-6 pb-10 border-b border-white/[0.08]" data-form-step="5">
+                <div class="flex items-center gap-3">
+                  <span class="flex items-center justify-center w-7 h-7 rounded-full bg-[#c5a059]/15 border border-[#c5a059]/40 text-[#c5a059] font-mono text-xs font-semibold">
+                    05
+                  </span>
+                  <h2 class="text-xl sm:text-2xl font-serif text-[#faf8f5] tracking-wide">
+                    Event Location *
+                  </h2>
+                </div>
+                <p class="text-xs sm:text-sm text-[#a69f91] leading-relaxed">
+                  City, address, or preferred geographical area across San Francisco and Northern California.
+                </p>
+
+                <!-- Location Chips -->
+                <div class="space-y-3">
+                  <span class="block text-xs font-mono uppercase tracking-[0.16em] text-[#a69f91]">
+                    Quick Select Popular Areas:
+                  </span>
+                  <div class="flex flex-wrap gap-2" id="location-chips">
+                    <button type="button" data-location="Millennium Tower, San Francisco" class="location-chip px-3 py-1.5 rounded-full text-xs font-sans bg-[#11141c] border border-white/10 hover:border-[#c5a059] text-[#dcd6ca] transition-colors">
+                      Millennium Tower (301 Mission St)
+                    </button>
+                    <button type="button" data-location="SoMa / Downtown San Francisco" class="location-chip px-3 py-1.5 rounded-full text-xs font-sans bg-[#11141c] border border-white/10 hover:border-[#c5a059] text-[#dcd6ca] transition-colors">
+                      SoMa / Downtown SF
+                    </button>
+                    <button type="button" data-location="Pacific Heights / Presidio, SF" class="location-chip px-3 py-1.5 rounded-full text-xs font-sans bg-[#11141c] border border-white/10 hover:border-[#c5a059] text-[#dcd6ca] transition-colors">
+                      Pacific Heights / Presidio
+                    </button>
+                    <button type="button" data-location="Napa Valley / Sonoma Wine Country" class="location-chip px-3 py-1.5 rounded-full text-xs font-sans bg-[#11141c] border border-white/10 hover:border-[#c5a059] text-[#dcd6ca] transition-colors">
+                      Napa / Sonoma Wine Country
+                    </button>
+                    <button type="button" data-location="Silicon Valley / Peninsula" class="location-chip px-3 py-1.5 rounded-full text-xs font-sans bg-[#11141c] border border-white/10 hover:border-[#c5a059] text-[#dcd6ca] transition-colors">
+                      Silicon Valley / Peninsula
+                    </button>
+                    <button type="button" data-location="Marin County / East Bay" class="location-chip px-3 py-1.5 rounded-full text-xs font-sans bg-[#11141c] border border-white/10 hover:border-[#c5a059] text-[#dcd6ca] transition-colors">
+                      Marin / East Bay
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Custom Address / Area Input -->
+                <div class="space-y-2 pt-1">
+                  <label for="event-location" class="block text-xs font-mono uppercase tracking-[0.16em] text-[#faf8f5]">
+                    Specific Address, City, or Neighborhood *
+                  </label>
+                  <input
+                    type="text"
+                    id="event-location"
+                    name="eventLocation"
+                    required
+                    placeholder="e.g. 301 Mission St, San Francisco, CA or Pacific Heights Residence"
+                    class="w-full px-4 py-3 bg-[#11141c] border border-white/10 rounded-md text-[#faf8f5] placeholder-[#a69f91]/40 text-sm focus:outline-none focus:border-[#c5a059] focus:ring-1 focus:ring-[#c5a059] transition-colors"
+                  />
+                </div>
+              </div>
+
+              <!-- 6. EVENT DATE AND TIME -->
+              <div class="space-y-6 pb-10 border-b border-white/[0.08]" data-form-step="6">
+                <div class="flex items-center gap-3">
+                  <span class="flex items-center justify-center w-7 h-7 rounded-full bg-[#c5a059]/15 border border-[#c5a059]/40 text-[#c5a059] font-mono text-xs font-semibold">
+                    06
+                  </span>
+                  <h2 class="text-xl sm:text-2xl font-serif text-[#faf8f5] tracking-wide">
+                    Event Date & Timing *
+                  </h2>
+                </div>
+                <p class="text-xs sm:text-sm text-[#a69f91] leading-relaxed">
+                  When do you envision hosting this event? Early scheduling ensures preferred sommelier and chef brigade availability.
+                </p>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 pt-2">
+                  <!-- Date Picker -->
+                  <div class="space-y-2">
+                    <label for="event-date" class="block text-xs font-mono uppercase tracking-[0.16em] text-[#faf8f5]">
+                      Target Event Date *
+                    </label>
+                    <input
+                      type="date"
+                      id="event-date"
+                      name="eventDate"
+                      required
+                      class="w-full px-4 py-3 bg-[#11141c] border border-white/10 rounded-md text-[#faf8f5] text-sm focus:outline-none focus:border-[#c5a059] focus:ring-1 focus:ring-[#c5a059] transition-colors"
+                    />
+                  </div>
+
+                  <!-- Date Flexibility -->
+                  <div class="space-y-2">
+                    <span class="block text-xs font-mono uppercase tracking-[0.16em] text-[#faf8f5]">
+                      Date Flexibility
+                    </span>
+                    <div class="flex gap-4 pt-2">
+                      <label class="flex items-center gap-2 cursor-pointer text-xs text-[#faf8f5]">
+                        <input type="radio" name="dateFlexibility" value="Firm Date" checked class="accent-[#c5a059]" />
+                        <span>Firm Date</span>
+                      </label>
+                      <label class="flex items-center gap-2 cursor-pointer text-xs text-[#faf8f5]">
+                        <input type="radio" name="dateFlexibility" value="Flexible (+/- 1-2 weeks)" class="accent-[#c5a059]" />
+                        <span>Flexible (+/- 1-2 weeks)</span>
+                      </label>
+                    </div>
+                  </div>
+
+                  <!-- Timing Windows -->
+                  <div class="space-y-2 sm:col-span-2 pt-2">
+                    <span class="block text-xs font-mono uppercase tracking-[0.16em] text-[#faf8f5]">
+                      Preferred Timing Window *
+                    </span>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="time-window-container">
+                      <label class="time-card p-3 rounded-md bg-[#11141c] border border-white/10 hover:border-[#c5a059] cursor-pointer flex items-center justify-between transition-colors">
+                        <div>
+                          <div class="text-xs font-medium text-[#faf8f5]">Evening Seated Dinner</div>
+                          <div class="text-[11px] text-[#a69f91]">Approx. 6:30 PM – 10:30 PM</div>
+                        </div>
+                        <input type="radio" name="timeWindow" value="Evening Seated Dinner (6:30 PM - 10:30 PM)" checked class="accent-[#c5a059]" />
+                      </label>
+
+                      <label class="time-card p-3 rounded-md bg-[#11141c] border border-white/10 hover:border-[#c5a059] cursor-pointer flex items-center justify-between transition-colors">
+                        <div>
+                          <div class="text-xs font-medium text-[#faf8f5]">Twilight Cocktail Reception</div>
+                          <div class="text-[11px] text-[#a69f91]">Approx. 5:00 PM – 9:00 PM</div>
+                        </div>
+                        <input type="radio" name="timeWindow" value="Twilight Cocktail Reception (5:00 PM - 9:00 PM)" class="accent-[#c5a059]" />
+                      </label>
+
+                      <label class="time-card p-3 rounded-md bg-[#11141c] border border-white/10 hover:border-[#c5a059] cursor-pointer flex items-center justify-between transition-colors">
+                        <div>
+                          <div class="text-xs font-medium text-[#faf8f5]">Afternoon Luncheon / Salon</div>
+                          <div class="text-[11px] text-[#a69f91]">Approx. 12:00 PM – 3:30 PM</div>
+                        </div>
+                        <input type="radio" name="timeWindow" value="Afternoon Luncheon (12:00 PM - 3:30 PM)" class="accent-[#c5a059]" />
+                      </label>
+
+                      <label class="time-card p-3 rounded-md bg-[#11141c] border border-white/10 hover:border-[#c5a059] cursor-pointer flex items-center justify-between transition-colors">
+                        <div>
+                          <div class="text-xs font-medium text-[#faf8f5]">Late Night Soiree</div>
+                          <div class="text-[11px] text-[#a69f91]">Approx. 9:00 PM – 1:00 AM</div>
+                        </div>
+                        <input type="radio" name="timeWindow" value="Late Night Soiree (9:00 PM - 1:00 AM)" class="accent-[#c5a059]" />
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 7. ADDITIONAL REQUIREMENTS & BESPOKE DISCIPLINES -->
+              <div class="space-y-6 pb-8" data-form-step="7">
+                <div class="flex items-center gap-3">
+                  <span class="flex items-center justify-center w-7 h-7 rounded-full bg-[#c5a059]/15 border border-[#c5a059]/40 text-[#c5a059] font-mono text-xs font-semibold">
+                    07
+                  </span>
+                  <h2 class="text-xl sm:text-2xl font-serif text-[#faf8f5] tracking-wide">
+                    Additional Requirements & Vision
+                  </h2>
+                </div>
+                <p class="text-xs sm:text-sm text-[#a69f91] leading-relaxed">
+                  Select the integrated services you would like included in your tailored event proposal.
+                </p>
+
+                <!-- Integrated Disciplines Checkboxes -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                  <label class="flex items-start gap-3 p-3 rounded bg-[#11141c] border border-white/10 hover:border-[#c5a059]/40 cursor-pointer transition-colors">
+                    <input type="checkbox" name="services" value="Private Chef Tasting Menu" checked class="mt-0.5 accent-[#c5a059]" />
+                    <div>
+                      <span class="text-xs font-medium text-[#faf8f5] block">Private Chef Tasting Menu</span>
+                      <span class="text-[11px] text-[#a69f91]">Multi-course seasonal bespoke dining orchestrated in-residence.</span>
+                    </div>
+                  </label>
+
+                  <label class="flex items-start gap-3 p-3 rounded bg-[#11141c] border border-white/10 hover:border-[#c5a059]/40 cursor-pointer transition-colors">
+                    <input type="checkbox" name="services" value="Sommelier Cellar Pairings" checked class="mt-0.5 accent-[#c5a059]" />
+                    <div>
+                      <span class="text-xs font-medium text-[#faf8f5] block">Sommelier Cellar Pairings</span>
+                      <span class="text-[11px] text-[#a69f91]">Rare library vintages and guided wine service for every course.</span>
+                    </div>
+                  </label>
+
+                  <label class="flex items-start gap-3 p-3 rounded bg-[#11141c] border border-white/10 hover:border-[#c5a059]/40 cursor-pointer transition-colors">
+                    <input type="checkbox" name="services" value="Artisanal Cocktail Bar" class="mt-0.5 accent-[#c5a059]" />
+                    <div>
+                      <span class="text-xs font-medium text-[#faf8f5] block">Artisanal Cocktail Bar</span>
+                      <span class="text-[11px] text-[#a69f91]">Dedicated mixologist, custom cocktail menu, hand-carved ice.</span>
+                    </div>
+                  </label>
+
+                  <label class="flex items-start gap-3 p-3 rounded bg-[#11141c] border border-white/10 hover:border-[#c5a059]/40 cursor-pointer transition-colors">
+                    <input type="checkbox" name="services" value="Architectural Floral & Table Styling" class="mt-0.5 accent-[#c5a059]" />
+                    <div>
+                      <span class="text-xs font-medium text-[#faf8f5] block">Architectural Florals & Table Staging</span>
+                      <span class="text-[11px] text-[#a69f91]">Sculptural botanicals, bespoke linen, candlelight and fine plateware.</span>
+                    </div>
+                  </label>
+
+                  <label class="flex items-start gap-3 p-3 rounded bg-[#11141c] border border-white/10 hover:border-[#c5a059]/40 cursor-pointer transition-colors">
+                    <input type="checkbox" name="services" value="Acoustic Music / Ambient Audio" class="mt-0.5 accent-[#c5a059]" />
+                    <div>
+                      <span class="text-xs font-medium text-[#faf8f5] block">Acoustic Music / Sound Tuning</span>
+                      <span class="text-[11px] text-[#a69f91]">Solo classical guitarist, harpist, jazz duo or acoustic playlist curation.</span>
+                    </div>
+                  </label>
+
+                  <label class="flex items-start gap-3 p-3 rounded bg-[#11141c] border border-white/10 hover:border-[#c5a059]/40 cursor-pointer transition-colors">
+                    <input type="checkbox" name="services" value="Complete Reset & Restoration" checked class="mt-0.5 accent-[#c5a059]" />
+                    <div>
+                      <span class="text-xs font-medium text-[#faf8f5] block">Complete Post-Event Restoration</span>
+                      <span class="text-[11px] text-[#a69f91]">Kitchen reset, fine crystal polishing, and pristine residence restored.</span>
+                    </div>
+                  </label>
+                </div>
+
+                <!-- Open Special Requests Textarea -->
+                <div class="space-y-2 pt-3">
+                  <label for="special-requests" class="block text-xs font-mono uppercase tracking-[0.16em] text-[#faf8f5]">
+                    Special Requests, Dietary Needs & Event Vision
+                  </label>
+                  <textarea
+                    id="special-requests"
+                    name="specialRequests"
+                    rows="4"
+                    placeholder="Tell us about allergies, preferred culinary styles (French, Contemporary American, Japanese, Mediterranean), guest of honor preferences, or any specific wishes..."
+                    class="w-full px-4 py-3 bg-[#11141c] border border-white/10 rounded-md text-[#faf8f5] placeholder-[#a69f91]/40 text-sm focus:outline-none focus:border-[#c5a059] focus:ring-1 focus:ring-[#c5a059] transition-colors leading-relaxed"
+                  ></textarea>
+                </div>
+              </div>
+
+              <!-- SUBMIT BUTTON & CONFIDENTIALITY SLA -->
+              <div class="pt-4 space-y-4">
+                <button
+                  type="submit"
+                  id="event-submit-btn"
+                  class="w-full py-4 px-8 text-sm font-semibold uppercase tracking-[0.2em] text-[#060709] bg-[#c5a059] hover:bg-[#dfc182] active:scale-[0.99] transition-all rounded-md shadow-lg flex items-center justify-center gap-3 cursor-pointer group"
+                >
+                  <span id="btn-text">Submit Event Requirements to Planner</span>
+                  <span class="transition-transform duration-200 group-hover:translate-x-1 font-mono text-base">→</span>
+                  <span id="btn-spinner" class="hidden w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin"></span>
+                </button>
+
+                <div class="flex flex-col sm:flex-row items-center justify-between text-xs text-[#a69f91] gap-2 pt-2 px-1">
+                  <div class="flex items-center gap-2">
+                    <svg class="w-4 h-4 text-[#c5a059] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                    </svg>
+                    <span>Strict Institutional Confidentiality & Non-Disclosure Protocol</span>
+                  </div>
+                  <span class="font-mono text-[11px] text-[#c5a059]">Event Planner Callback: &lt; 2 Hours</span>
+                </div>
+              </div>
+            </form>
+          </div>
+
+          <!-- RIGHT COLUMN: LIVE EVENT BRIEF SIDEBAR (4 COLS) -->
+          <div class="lg:col-span-4 space-y-6 lg:sticky lg:top-28">
+            <!-- Real-Time Event Brief Card -->
+            <div class="bg-[#0b0e14] border border-[#c5a059]/35 p-6 rounded-xl shadow-xl space-y-5">
+              <div class="flex items-center justify-between border-b border-white/[0.08] pb-3">
+                <span class="text-[10px] font-mono uppercase tracking-[0.22em] text-[#c5a059]">
+                  Live Specification Brief
+                </span>
+                <span class="flex items-center gap-1.5 text-[10px] font-mono text-emerald-400">
+                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                  Active
+                </span>
+              </div>
+
+              <div class="space-y-4 text-xs font-mono">
+                <div>
+                  <span class="text-[#a69f91] block text-[10px] uppercase tracking-wider">Occasion:</span>
+                  <span id="brief-event-type" class="text-base font-serif font-medium text-[#faf8f5] block mt-0.5">Birthday</span>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3 pt-2 border-t border-white/[0.06]">
+                  <div>
+                    <span class="text-[#a69f91] block text-[10px] uppercase tracking-wider">Guest Count:</span>
+                    <span id="brief-guests" class="text-sm font-serif font-semibold text-[#c5a059]">20 Guests</span>
+                  </div>
+                  <div>
+                    <span class="text-[#a69f91] block text-[10px] uppercase tracking-wider">Venue Status:</span>
+                    <span id="brief-venue" class="text-xs text-[#faf8f5]">Have Space</span>
+                  </div>
+                </div>
+
+                <div class="pt-2 border-t border-white/[0.06]">
+                  <span class="text-[#a69f91] block text-[10px] uppercase tracking-wider">Location:</span>
+                  <span id="brief-location" class="text-xs text-[#faf8f5] line-clamp-1">Millennium Tower, San Francisco</span>
+                </div>
+
+                <div class="pt-2 border-t border-white/[0.06]">
+                  <span class="text-[#a69f91] block text-[10px] uppercase tracking-wider">Target Date & Timing:</span>
+                  <span id="brief-date" class="text-xs text-[#faf8f5] block mt-0.5">Date to be selected</span>
+                  <span id="brief-timing" class="text-[11px] text-[#c5a059] block mt-0.5">Evening Seated Dinner</span>
+                </div>
+
+                <div class="pt-2 border-t border-white/[0.06]">
+                  <span class="text-[#a69f91] block text-[10px] uppercase tracking-wider">Client Liaison:</span>
+                  <span id="brief-client" class="text-xs text-[#faf8f5]">Awaiting entry...</span>
+                </div>
+              </div>
+
+              <!-- Direct Desk Contact Assistance -->
+              <div class="pt-4 border-t border-white/[0.08] text-center space-y-2">
+                <span class="text-[10px] font-mono uppercase tracking-widest text-[#a69f91] block">Prefer Direct Conversation?</span>
+                <a href="mailto:events@blacklabel.life" class="text-xs font-serif text-[#c5a059] hover:underline block">
+                  events@blacklabel.life
+                </a>
+                <span class="text-[10px] font-mono text-[#a69f91] block">Tel: +1 (415) 890-2400 · Millennium Tower</span>
+              </div>
+            </div>
+
+            <!-- Trust Accordion -->
+            <div class="p-5 rounded-xl bg-[#090b0e] border border-white/[0.08] space-y-3 text-xs text-[#a69f91]">
+              <h3 class="text-xs font-mono uppercase tracking-widest text-[#faf8f5] font-semibold flex items-center gap-2">
+                <span class="text-[#c5a059]">✦</span> The Black Label Event Guarantee
+              </h3>
+              <p class="leading-relaxed">
+                One dedicated event planner coordinates chefs, sommeliers, floral ateliers, and service brigades. You host without operational distraction.
+              </p>
+              <ul class="space-y-1.5 font-mono text-[11px] text-[#faf8f5]/80 pt-1">
+                <li class="flex items-center gap-2">✓ Certified Sommeliers & Michelin Brigade</li>
+                <li class="flex items-center gap-2">✓ Strict Building & High-Rise Rule Adherence</li>
+                <li class="flex items-center gap-2">✓ Complete Kitchen Reset & Midnight Polish</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SUCCESS CONFIRMATION OVERLAY MODAL -->
+    <div
+      id="event-success-modal"
+      class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/85 backdrop-blur-md hidden transition-opacity duration-300"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="success-modal-title"
+    >
+      <div class="w-full max-w-2xl bg-[#0b0e14] border border-[#c5a059]/60 rounded-2xl p-6 sm:p-10 shadow-2xl relative overflow-hidden space-y-6 text-center animate-scale-up">
+        <!-- Ambient radial glow -->
+        <div class="absolute inset-0 bg-radial-glow-champagne pointer-events-none opacity-50"></div>
+
+        <!-- Seal Icon -->
+        <div class="relative flex justify-center">
+          <div class="w-16 h-16 rounded-full bg-[#c5a059]/20 border border-[#c5a059] flex items-center justify-center text-[#c5a059]">
+            <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+            </svg>
+          </div>
+        </div>
+
+        <div class="space-y-2 relative z-10">
+          <span class="px-3 py-1 rounded bg-[#c5a059]/15 text-[#c5a059] text-[10px] font-mono uppercase tracking-widest inline-block">
+            Requirements Logged & Dispatched
+          </span>
+          <h2 id="success-modal-title" class="text-2xl sm:text-3xl font-serif text-[#faf8f5]">
+            Event Specification Received
+          </h2>
+          <p class="text-xs sm:text-sm text-[#dcd6ca] max-w-lg mx-auto leading-relaxed">
+            Thank you. Your event requirements have been routed directly to our Black Label Event Planning Brigade at Millennium Tower.
+          </p>
+        </div>
+
+        <!-- Summary Receipt Card -->
+        <div class="p-5 rounded-lg bg-[#11141c] border border-white/10 text-left space-y-3 relative z-10 font-mono text-xs">
+          <div class="flex items-center justify-between border-b border-white/[0.08] pb-2.5">
+            <span class="text-[#a69f91] uppercase tracking-wider text-[10px]">Reference Number:</span>
+            <span id="success-reference-code" class="text-[#c5a059] font-bold text-sm">EVT-SF-2026-8491</span>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3 text-xs">
+            <div>
+              <span class="text-[#a69f91] block text-[10px]">Client:</span>
+              <span id="success-client-name" class="text-[#faf8f5] font-semibold">-</span>
+            </div>
+            <div>
+              <span class="text-[#a69f91] block text-[10px]">Occasion:</span>
+              <span id="success-event-type" class="text-[#c5a059] font-semibold">-</span>
+            </div>
+            <div>
+              <span class="text-[#a69f91] block text-[10px]">Guest Count:</span>
+              <span id="success-guest-count" class="text-[#faf8f5]">-</span>
+            </div>
+            <div>
+              <span class="text-[#a69f91] block text-[10px]">Venue Status:</span>
+              <span id="success-venue-status" class="text-[#faf8f5]">-</span>
+            </div>
+            <div class="col-span-2">
+              <span class="text-[#a69f91] block text-[10px]">Target Date & Window:</span>
+              <span id="success-date-time" class="text-[#faf8f5]">-</span>
+            </div>
+            <div class="col-span-2">
+              <span class="text-[#a69f91] block text-[10px]">Event Location:</span>
+              <span id="success-location" class="text-[#faf8f5] line-clamp-1">-</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- SLA Callout -->
+        <div class="p-3.5 rounded bg-[#c5a059]/10 border border-[#c5a059]/30 text-xs text-[#dcd6ca] text-center space-y-1 relative z-10">
+          <p class="font-medium text-[#faf8f5]">Our event planner will contact you via your preferred channel within 2 hours.</p>
+          <p class="text-[11px] text-[#a69f91]">For urgent matters: events@blacklabel.life · (415) 890-2400</p>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2 relative z-10">
+          <button
+            type="button"
+            id="copy-summary-btn"
+            class="w-full sm:w-auto px-6 py-2.5 rounded text-xs font-mono uppercase tracking-wider text-[#faf8f5] bg-white/[0.06] hover:bg-white/[0.1] border border-white/20 transition-colors cursor-pointer flex items-center justify-center gap-2"
+          >
+            <span>Copy Event Brief</span>
+          </button>
+          <a
+            href="/entertainment"
+            class="w-full sm:w-auto px-6 py-2.5 rounded text-xs font-semibold uppercase tracking-wider text-[#060709] bg-[#c5a059] hover:bg-[#dfc182] transition-colors"
+          >
+            Return to Entertainment
+          </a>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  ${renderSharedFooter()}
+</body>
+</html>`;
+}
+
+
 function generateConciergePage(): string {
   const jsonLd = [
     {
@@ -3851,6 +4769,22 @@ async function buildAllPages(): Promise<void> {
     fs.writeFileSync(path.join(dirPath, 'index.html'), generateDivisionPage(div), 'utf8');
     console.log(`✓ Generated: /${div.slug}/index.html`);
   }
+
+  // 2b. Private Event Planning Page (/entertainment/plan and /events)
+  const eventPlanHtml = generateEventPlanningPage();
+  const planDir = path.join(rootDir, 'entertainment', 'plan');
+  if (!fs.existsSync(planDir)) {
+    fs.mkdirSync(planDir, { recursive: true });
+  }
+  fs.writeFileSync(path.join(planDir, 'index.html'), eventPlanHtml, 'utf8');
+  console.log('✓ Generated: /entertainment/plan/index.html');
+
+  const eventsDir = path.join(rootDir, 'events');
+  if (!fs.existsSync(eventsDir)) {
+    fs.mkdirSync(eventsDir, { recursive: true });
+  }
+  fs.writeFileSync(path.join(eventsDir, 'index.html'), eventPlanHtml, 'utf8');
+  console.log('✓ Generated: /events/index.html');
 
   // 3. Concierge Page
   const conciergeDir = path.join(rootDir, 'concierge');

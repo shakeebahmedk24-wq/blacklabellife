@@ -447,16 +447,20 @@ export function renderSharedHeader(activePath: string): string {
       <!-- DESKTOP MENU -->
       <nav id="desktop-nav" class="hidden xl:flex items-center space-x-1" aria-label="Main Navigation">
         ${navLinks}
-        <div class="pl-4 ml-2 border-l border-white/10">
-          <a href="/concierge" id="header-concierge-btn" class="inline-flex items-center justify-center px-5 py-2.5 text-[11px] font-semibold uppercase tracking-[0.2em] text-[#060709] bg-[#c5a059] hover:bg-[#dfc182] transition-all duration-300 rounded-sm shadow-[0_0_15px_rgba(197,160,89,0.25)] hover:shadow-[0_0_20px_rgba(197,160,89,0.4)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#c5a059]">
-            Concierge Desk
+        <div class="pl-4 ml-2 border-l border-white/10 flex items-center gap-2">
+          <a href="/events" id="header-plan-event-btn" class="inline-flex items-center justify-center px-4 py-2.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#faf8f5] bg-white/[0.04] hover:bg-[#c5a059]/15 border border-[#c5a059]/40 hover:border-[#c5a059] transition-all duration-300 rounded-sm">
+            Plan Event
+          </a>
+          <a href="/concierge" id="header-concierge-btn" class="inline-flex items-center justify-center px-4 py-2.5 text-[11px] font-semibold uppercase tracking-[0.2em] text-[#060709] bg-[#c5a059] hover:bg-[#dfc182] transition-all duration-300 rounded-sm shadow-[0_0_15px_rgba(197,160,89,0.25)] hover:shadow-[0_0_20px_rgba(197,160,89,0.4)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#c5a059]">
+            Concierge
           </a>
         </div>
       </nav>
 
       <!-- MOBILE / TABLET MENU TOGGLE -->
-      <div class="flex items-center gap-3 xl:hidden">
-        <a href="/concierge" class="text-[10px] font-semibold uppercase tracking-widest px-3 py-1.5 text-[#060709] bg-[#c5a059] rounded-sm shadow-sm">Concierge</a>
+      <div class="flex items-center gap-2 xl:hidden">
+        <a href="/events" class="text-[10px] font-semibold uppercase tracking-wider px-2.5 py-1.5 text-[#faf8f5] bg-white/[0.06] border border-[#c5a059]/40 rounded-sm">Plan Event</a>
+        <a href="/concierge" class="text-[10px] font-semibold uppercase tracking-widest px-2.5 py-1.5 text-[#060709] bg-[#c5a059] rounded-sm shadow-sm">Concierge</a>
         <button type="button" data-mobile-menu-open id="mobile-menu-toggle-btn" class="p-2 text-[#faf8f5] hover:text-[#c5a059] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#c5a059] rounded-sm border border-white/10 bg-white/[0.03]" aria-label="Open mobile menu">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 7h16M4 12h16M4 17h16" />
@@ -495,6 +499,15 @@ export function renderSharedHeader(activePath: string): string {
       </div>
 
       <div class="mt-8 pt-6 border-t border-white/10 space-y-4">
+        <!-- Direct Event Intake CTA -->
+        <a href="/events" class="flex items-center justify-between py-3 px-3.5 rounded bg-[#c5a059]/15 border border-[#c5a059]/50 text-[#c5a059] group transition-all">
+          <div class="flex items-center gap-2.5">
+            <span class="w-2 h-2 rounded-full bg-[#c5a059] animate-pulse"></span>
+            <span class="text-xs font-semibold uppercase tracking-widest font-mono">Plan Private Event</span>
+          </div>
+          <span class="text-xs font-mono group-hover:translate-x-1 transition-transform">10–50 Guests →</span>
+        </a>
+
         <div class="grid grid-cols-2 gap-2.5">
           <a href="/contact" class="inline-flex items-center justify-center py-3.5 px-3 text-xs font-semibold uppercase tracking-[0.16em] text-[#060709] bg-[#c5a059] hover:bg-[#dfc182] transition-colors rounded-sm shadow-md text-center">
             Contact & Map

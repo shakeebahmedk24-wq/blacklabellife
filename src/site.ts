@@ -363,6 +363,328 @@ function initSite(): void {
   }
 
   // --------------------------------------------------------------------------
+  // 6B. PRIVATE EVENT PLANNING INTAKE CONTROLLER (/entertainment/plan)
+  // --------------------------------------------------------------------------
+  const eventForm = document.getElementById('event-planning-form') as HTMLFormElement | null;
+  const eventSuccessModal = document.getElementById('event-success-modal');
+
+  if (eventForm) {
+    // 1. Minimum date = tomorrow
+    const dateInput = document.getElementById('event-date') as HTMLInputElement | null;
+    if (dateInput) {
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      dateInput.min = tomorrow.toISOString().split('T')[0];
+    }
+
+    // 2. Elements for live brief sync
+    const briefEventType = document.getElementById('brief-event-type');
+    const briefGuests = document.getElementById('brief-guests');
+    const briefVenue = document.getElementById('brief-venue');
+    const briefLocation = document.getElementById('brief-location');
+    const briefDate = document.getElementById('brief-date');
+    const briefTiming = document.getElementById('brief-timing');
+    const briefClient = document.getElementById('brief-client');
+
+    const clientNameInput = document.getElementById('client-name') as HTMLInputElement | null;
+    const customEventWrapper = document.getElementById('custom-event-type-wrapper');
+    const customEventInput = document.getElementById('custom-event-type') as HTMLInputElement | null;
+    const locationInput = document.getElementById('event-location') as HTMLInputElement | null;
+    const guestSlider = document.getElementById('guest-slider') as HTMLInputElement | null;
+    const guestInput = document.getElementById('guest-input') as HTMLInputElement | null;
+    const guestBadge = document.getElementById('guest-count-badge');
+
+    // Sync client name
+    clientNameInput?.addEventListener('input', () => {
+      if (briefClient) {
+        briefClient.textContent = clientNameInput.value.trim() || 'Awaiting entry...';
+      }
+    });
+
+    // Sync event type cards
+    const eventTypeCards = document.querySelectorAll<HTMLElement>('.event-type-card');
+    eventTypeCards.forEach((card) => {
+      const radio = card.querySelector<HTMLInputElement>('.event-type-radio');
+      card.addEventListener('click', () => {
+        if (!radio) return;
+        radio.checked = true;
+        
+        eventTypeCards.forEach((c) => {
+          c.classList.remove('border-[#c5a059]', 'bg-[#151a24]');
+          c.classList.add('border-white/10', 'bg-[#11141c]');
+          const dot = c.querySelector('.indicator-dot');
+          if (dot) dot.classList.add('hidden');
+        });
+        card.classList.remove('border-white/10', 'bg-[#11141c]');
+        card.classList.add('border-[#c5a059]', 'bg-[#151a24]');
+        const dot = card.querySelector('.indicator-dot');
+        if (dot) dot.classList.remove('hidden');
+
+        if (radio.value === 'Another Event') {
+          customEventWrapper?.classList.remove('hidden');
+          customEventInput?.focus();
+          if (briefEventType) briefEventType.textContent = customEventInput?.value.trim() || 'Another Event (Custom)';
+        } else {
+          customEventWrapper?.classList.add('hidden');
+          if (briefEventType) briefEventType.textContent = radio.value;
+        }
+      });
+    });
+
+    customEventInput?.addEventListener('input', () => {
+      if (briefEventType) {
+        briefEventType.textContent = customEventInput.value.trim() || 'Another Event (Custom)';
+      }
+    });
+
+    // Sync venue cards
+    const venueCards = document.querySelectorAll<HTMLElement>('.venue-card');
+    venueCards.forEach((card) => {
+      const radio = card.querySelector<HTMLInputElement>('.venue-radio');
+      card.addEventListener('click', () => {
+        if (!radio) return;
+        radio.checked = true;
+        venueCards.forEach((c) => {
+          c.classList.remove('border-[#c5a059]', 'bg-[#151a24]');
+          c.classList.add('border-white/10', 'bg-[#11141c]');
+          const dot = c.querySelector('.indicator-dot');
+          if (dot) dot.classList.add('hidden');
+        });
+        card.classList.remove('border-white/10', 'bg-[#11141c]');
+        card.classList.add('border-[#c5a059]', 'bg-[#151a24]');
+        const dot = card.querySelector('.indicator-dot');
+        if (dot) dot.classList.remove('hidden');
+
+        if (briefVenue) {
+          briefVenue.textContent = radio.value === 'Already Have Venue' ? 'Have Space' : radio.value === 'Need Help Finding Venue' ? 'Need Venue' : 'Flexible';
+        }
+      });
+    });
+
+    // Guest Count slider & input bi-directional sync (clamped 10 to 50)
+    function updateGuestCount(val: number) {
+      const clamped = Math.min(50, Math.max(10, val));
+      if (guestSlider) guestSlider.value = String(clamped);
+      if (guestInput) guestInput.value = String(clamped);
+      if (guestBadge) guestBadge.textContent = `${clamped} Guests`;
+      if (briefGuests) briefGuests.textContent = `${clamped} Guests`;
+
+      document.querySelectorAll<HTMLElement>('.guest-preset-btn').forEach((btn) => {
+        const presetVal = parseInt(btn.getAttribute('data-preset-guests') || '0', 10);
+        if (presetVal === clamped) {
+          btn.classList.add('border-[#c5a059]', 'text-[#c5a059]', 'bg-[#c5a059]/20');
+          btn.classList.remove('border-white/10', 'text-[#faf8f5]', 'bg-white/[0.04]');
+        } else {
+          btn.classList.remove('border-[#c5a059]', 'text-[#c5a059]', 'bg-[#c5a059]/20');
+          btn.classList.add('border-white/10', 'text-[#faf8f5]', 'bg-white/[0.04]');
+        }
+      });
+    }
+
+    guestSlider?.addEventListener('input', (e) => {
+      updateGuestCount(parseInt((e.target as HTMLInputElement).value, 10));
+    });
+
+    guestInput?.addEventListener('input', (e) => {
+      const val = parseInt((e.target as HTMLInputElement).value, 10);
+      if (!isNaN(val)) updateGuestCount(val);
+    });
+
+    document.querySelectorAll<HTMLElement>('.guest-preset-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const presetVal = parseInt(btn.getAttribute('data-preset-guests') || '20', 10);
+        updateGuestCount(presetVal);
+      });
+    });
+
+    // Location chips
+    document.querySelectorAll<HTMLElement>('.location-chip').forEach((chip) => {
+      chip.addEventListener('click', () => {
+        const loc = chip.getAttribute('data-location') || '';
+        if (locationInput) {
+          locationInput.value = loc;
+          locationInput.dispatchEvent(new Event('input'));
+        }
+      });
+    });
+
+    locationInput?.addEventListener('input', () => {
+      if (briefLocation) {
+        briefLocation.textContent = locationInput.value.trim() || 'Location to be specified';
+      }
+    });
+
+    // Date & Time sync
+    dateInput?.addEventListener('change', () => {
+      if (briefDate && dateInput.value) {
+        const d = new Date(dateInput.value + 'T00:00:00');
+        briefDate.textContent = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+      }
+    });
+
+    const timeCards = document.querySelectorAll<HTMLElement>('.time-card');
+    timeCards.forEach((tc) => {
+      const radio = tc.querySelector<HTMLInputElement>('input[type="radio"]');
+      tc.addEventListener('click', () => {
+        if (!radio) return;
+        radio.checked = true;
+        timeCards.forEach((c) => {
+          c.classList.remove('border-[#c5a059]', 'bg-[#151a24]');
+          c.classList.add('border-white/10', 'bg-[#11141c]');
+        });
+        tc.classList.remove('border-white/10', 'bg-[#11141c]');
+        tc.classList.add('border-[#c5a059]', 'bg-[#151a24]');
+
+        if (briefTiming) {
+          briefTiming.textContent = radio.value.split('(')[0].trim();
+        }
+      });
+    });
+
+    // Form submission
+    eventForm.addEventListener('submit', async (e: Event) => {
+      e.preventDefault();
+
+      const submitBtn = document.getElementById('event-submit-btn') as HTMLButtonElement | null;
+      const btnText = document.getElementById('btn-text');
+      const btnSpinner = document.getElementById('btn-spinner');
+
+      const formData = new FormData(eventForm);
+      const clientName = (formData.get('clientName') as string || '').trim();
+      const clientEmail = (formData.get('clientEmail') as string || '').trim();
+      const clientPhone = (formData.get('clientPhone') as string || '').trim();
+      const contactPref = (formData.get('contactPreference') as string || 'Phone Call');
+      const eventTypeRaw = (formData.get('eventType') as string || 'Birthday');
+      const customEventType = (formData.get('customEventType') as string || '').trim();
+      const eventType = eventTypeRaw === 'Another Event' && customEventType ? customEventType : eventTypeRaw;
+      const venueStatus = (formData.get('venueStatus') as string || 'Already Have Venue');
+      const venueNotes = (formData.get('venueNotes') as string || '').trim();
+      const guestCount = Math.min(50, Math.max(10, parseInt((formData.get('guestCount') as string || '20'), 10)));
+      const eventLocation = (formData.get('eventLocation') as string || '').trim();
+      const eventDate = (formData.get('eventDate') as string || '').trim();
+      const dateFlexibility = (formData.get('dateFlexibility') as string || 'Firm Date');
+      const timeWindow = (formData.get('timeWindow') as string || 'Evening Seated Dinner');
+      const services = formData.getAll('services') as string[];
+      const specialRequests = (formData.get('specialRequests') as string || '').trim();
+
+      const errorBanner = document.getElementById('form-error-banner');
+      const errorText = document.getElementById('form-error-text');
+
+      if (!clientName || !clientEmail || !clientPhone || !eventDate || !eventLocation) {
+        if (errorBanner) {
+          errorBanner.classList.remove('hidden');
+          if (errorText) {
+            const missing: string[] = [];
+            if (!clientName) missing.push('Full Name');
+            if (!clientEmail) missing.push('Email Address');
+            if (!clientPhone) missing.push('Phone Number');
+            if (!eventLocation) missing.push('Event Location');
+            if (!eventDate) missing.push('Target Event Date');
+            errorText.textContent = `Please complete all required fields: ${missing.join(', ')}.`;
+          }
+          errorBanner.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+        return;
+      }
+
+      if (errorBanner) errorBanner.classList.add('hidden');
+
+      if (submitBtn) submitBtn.disabled = true;
+      if (btnSpinner) btnSpinner.classList.remove('hidden');
+      if (btnText) btnText.textContent = 'Submitting Requirements to Planner...';
+
+      const payload = {
+        clientName,
+        clientEmail,
+        clientPhone,
+        contactPreference: contactPref,
+        eventType,
+        venueStatus,
+        venueNotes,
+        guestCount,
+        eventLocation,
+        eventDate,
+        dateFlexibility,
+        timeWindow,
+        services,
+        specialRequests,
+        submittedAt: new Date().toISOString(),
+      };
+
+      const refCode = `EVT-SF-${Date.now().toString().slice(-4)}`;
+
+      // 1. Save to local storage for instant offline resilience & admin analytics
+      try {
+        const stored = JSON.parse(localStorage.getItem('blacklabel_event_inquiries') || '[]');
+        stored.unshift({ ...payload, reference: refCode });
+        localStorage.setItem('blacklabel_event_inquiries', JSON.stringify(stored));
+      } catch (err) {
+        console.warn('LocalStorage save failed:', err);
+      }
+
+      // 2. Dispatch to server backend (/api/events)
+      try {
+        await fetch('/api/events', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+      } catch (err) {
+        console.warn('Server endpoint /api/events offline, recorded locally:', err);
+      }
+
+      // 3. Populate and show success modal
+      const codeEl = document.getElementById('success-reference-code');
+      const nameEl = document.getElementById('success-client-name');
+      const typeEl = document.getElementById('success-event-type');
+      const guestsEl = document.getElementById('success-guest-count');
+      const venueEl = document.getElementById('success-venue-status');
+      const dateTimeEl = document.getElementById('success-date-time');
+      const locEl = document.getElementById('success-location');
+
+      if (codeEl) codeEl.textContent = refCode;
+      if (nameEl) nameEl.textContent = `${clientName} (${clientPhone} · ${clientEmail})`;
+      if (typeEl) typeEl.textContent = eventType;
+      if (guestsEl) guestsEl.textContent = `${guestCount} Guests`;
+      if (venueEl) venueEl.textContent = venueStatus === 'Already Have Venue' ? 'Private Residence / Have Space' : venueStatus === 'Need Help Finding Venue' ? 'Assistance Sourcing Venue' : 'Open / Flexible';
+      if (dateTimeEl) dateTimeEl.textContent = `${eventDate} (${timeWindow})`;
+      if (locEl) locEl.textContent = eventLocation + (venueNotes ? ` · Note: ${venueNotes}` : '');
+
+      if (eventSuccessModal) {
+        eventSuccessModal.classList.remove('hidden');
+      }
+
+      const copyBtn = document.getElementById('copy-summary-btn');
+      if (copyBtn) {
+        copyBtn.onclick = () => {
+          const textToCopy = `Black Label Private Event Specification\n` +
+            `Reference: ${refCode}\n` +
+            `Client: ${clientName} (${clientEmail}, ${clientPhone})\n` +
+            `Event: ${eventType}\n` +
+            `Guest Count: ${guestCount} people\n` +
+            `Venue: ${venueStatus}\n` +
+            `Location: ${eventLocation}\n` +
+            `Date & Time: ${eventDate} (${timeWindow})\n` +
+            `Services: ${services.join(', ') || 'Custom Brigade'}\n` +
+            `Special Requests: ${specialRequests || 'None specified'}\n` +
+            `Origin: Millennium Tower, San Francisco`;
+
+          navigator.clipboard?.writeText(textToCopy).then(() => {
+            copyBtn.innerHTML = '<span>✓ Copied to Clipboard</span>';
+            setTimeout(() => {
+              copyBtn.innerHTML = '<span>Copy Event Brief</span>';
+            }, 3000);
+          });
+        };
+      }
+
+      if (submitBtn) submitBtn.disabled = false;
+      if (btnSpinner) btnSpinner.classList.add('hidden');
+      if (btnText) btnText.textContent = 'Submit Event Requirements to Planner';
+    });
+  }
+
+  // --------------------------------------------------------------------------
   // 7. LUXURY SECTION REVEALS & HARDWARE-ACCELERATED TRANSITIONS
   // --------------------------------------------------------------------------
   // Owner Note: Uses native IntersectionObserver to animate content into view
