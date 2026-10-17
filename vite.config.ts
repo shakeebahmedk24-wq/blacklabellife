@@ -23,10 +23,12 @@
  * ============================================================================
  */
 
+import { GoogleGenAI } from '@google/genai';
 import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
 import { defineConfig, Plugin } from 'vite';
+import { SYSTEM_INSTRUCTION } from './src/chatbot/systemPrompt';
 
 /**
  * List of multi-page route directories in the application.
@@ -44,6 +46,101 @@ const mpaRoutes = [
   'contact',
   'admin',
 ];
+
+/**
+ * Server-side Gemini API proxy plugin.
+ * Handles /api/chat requests entirely server-side, protecting API keys and streaming responses.
+ */
+function geminiApiPlugin(): Plugin {
+  return {
+    name: 'gemini-api-proxy',
+    configureServer(server) {
+      server.middlewares.use('/api/chat', async (req, res) => {
+        if (req.method !== 'POST') {
+          res.statusCode = 405;
+          res.end('Method Not Allowed');
+          return;
+        }
+
+        let body = '';
+        req.on('data', (chunk) => {
+          body += chunk;
+        });
+
+        req.on('end', async () => {
+          try {
+            const { history, userMessage, currentPath } = JSON.parse(body);
+            const apiKey = process.env.GEMINI_API_KEY;
+            if (!apiKey) {
+              res.statusCode = 500;
+              res.setHeader('Content-Type', 'application/json');
+              res.end(JSON.stringify({ error: 'GEMINI_API_KEY is not configured on the server.' }));
+              return;
+            }
+
+            const ai = new GoogleGenAI({
+              apiKey,
+              httpOptions: {
+                headers: {
+                  'User-Agent': 'aistudio-build',
+                },
+              },
+            });
+
+            const formattedHistory = (history || [])
+              .filter((m: any) => m.text && !m.isStreaming)
+              .map((m: any) => ({
+                role: m.role,
+                parts: [{ text: m.text }],
+              }));
+
+            const contextualUserMessage = `[Visitor is currently on page: ${currentPath || '/'}]\n${userMessage}`;
+
+            res.writeHead(200, {
+              'Content-Type': 'text/event-stream',
+              'Cache-Control': 'no-cache',
+              'Connection': 'keep-alive',
+            });
+
+            const chat = ai.chats.create({
+              model: 'gemini-3.8-flash',
+              config: {
+                systemInstruction: SYSTEM_INSTRUCTION,
+                temperature: 0.6,
+                maxOutputTokens: 500,
+              },
+              history: formattedHistory,
+            });
+
+            const responseStream = await chat.sendMessageStream({
+              message: contextualUserMessage,
+            });
+
+            for await (const chunk of responseStream) {
+              const text = chunk.text || '';
+              if (text) {
+                res.write(`data: ${JSON.stringify({ text })}\n\n`);
+              }
+            }
+
+            res.write('data: [DONE]\n\n');
+            res.end();
+          } catch (err: any) {
+            console.error('Server chat proxy error:', err);
+            if (!res.headersSent) {
+              res.statusCode = 500;
+              res.setHeader('Content-Type', 'application/json');
+              res.end(JSON.stringify({ error: err?.message || 'Chat generation failed' }));
+            } else {
+              res.write(`data: ${JSON.stringify({ error: err?.message })}\n\n`);
+              res.end();
+            }
+          }
+        });
+      });
+    },
+  };
+}
 
 /**
  * Dev server middleware plugin that allows clean URL paths without trailing .html
@@ -84,7 +181,7 @@ export default defineConfig(() => {
     define: {
       'process.env.GEMINI_API_KEY': JSON.stringify(process.env.GEMINI_API_KEY || ''),
     },
-    plugins: [react(), tailwindcss(), mpaCleanUrlsPlugin()],
+    plugins: [react(), tailwindcss(), mpaCleanUrlsPlugin(), geminiApiPlugin()],
     resolve: {
       alias: {
         '@': path.resolve(__dirname, '.'),

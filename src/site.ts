@@ -42,11 +42,16 @@
  * ============================================================================
  */
 
+import { mountChatbot } from './App';
+
 /**
  * Main application bootstrap function.
  * Invoked once the DOM is ready or immediately if already interactive.
  */
 function initSite(): void {
+  // Mount the interactive Black Label Concierge Assistant chatbot widget
+  mountChatbot();
+
   // --------------------------------------------------------------------------
   // 0. IDLE TELEMETRY & BACKGROUND ANALYTICS DISPATCH
   // --------------------------------------------------------------------------

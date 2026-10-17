@@ -22,7 +22,7 @@ function renderMarkdown(content: string, onNavigate?: (path: string) => void): R
   const flushList = (keyPrefix: string) => {
     if (currentList.length > 0) {
       elements.push(
-        <ul key={`${keyPrefix}-ul`} className="list-disc list-inside space-y-1.5 my-2 pl-1 text-sm text-[#dcd6ca]">
+        <ul key={`${keyPrefix}-ul`} className="list-disc list-inside space-y-1.5 my-2 pl-1 text-xs sm:text-sm text-[#dcd6ca]">
           {currentList.map((item, idx) => (
             <li key={`${keyPrefix}-li-${idx}`} className="leading-relaxed">
               {renderInlineMarkdown(item, onNavigate)}
@@ -42,10 +42,10 @@ function renderMarkdown(content: string, onNavigate?: (path: string) => void): R
       flushList(`line-${index}`);
       if (trimmed === '') {
         // Spacer for empty lines
-        elements.push(<div key={`br-${index}`} className="h-2" />);
+        elements.push(<div key={`br-${index}`} className="h-1.5" />);
       } else {
         elements.push(
-          <p key={`p-${index}`} className="text-sm text-[#faf8f5] leading-relaxed my-1">
+          <p key={`p-${index}`} className="text-xs sm:text-sm text-[#faf8f5] leading-relaxed my-1">
             {renderInlineMarkdown(line, onNavigate)}
           </p>
         );
@@ -122,14 +122,14 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message, onNavigate })
   return (
     <div className={`flex w-full ${isUser ? 'justify-end' : 'justify-start'} mb-3`}>
       <div
-        className={`max-w-[85%] rounded-2xl px-4 py-3 text-sm transition-all duration-200 ${
+        className={`max-w-[90%] sm:max-w-[85%] rounded-2xl px-3.5 py-2.5 sm:px-4 sm:py-3 text-[13px] sm:text-sm break-words [overflow-wrap:anywhere] transition-all duration-200 ${
           isUser
             ? 'bg-[#c5a059] text-[#060709] rounded-tr-none font-medium shadow-md selection:bg-black selection:text-white'
             : 'bg-[#121316] text-[#faf8f5] border border-white/10 rounded-tl-none shadow-md'
         }`}
       >
         {isUser ? (
-          <p className="whitespace-pre-wrap leading-relaxed">{message.text}</p>
+          <p className="whitespace-pre-wrap leading-relaxed break-words">{message.text}</p>
         ) : (
           <div>
             {message.text ? (

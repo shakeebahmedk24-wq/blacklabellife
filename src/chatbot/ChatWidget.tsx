@@ -6,15 +6,16 @@ import type { ChatMessageItem } from './types';
 const INITIAL_BOT_MESSAGE: ChatMessageItem = {
   id: 'init-msg',
   role: 'model',
-  text: 'Welcome to Black Label. How may I assist you today?',
+  text: 'Hello, I am the Black Label Concierge Assistant. Tell me what is taking up your time and I will point you to the right team.',
   timestamp: Date.now(),
 };
 
 const QUICK_REPLY_CHIPS = [
   'Explore the 8 divisions',
-  'Book an in-residence dinner',
-  'Luxury car & jewelry rentals',
-  'Start a concierge request',
+  'I need help at home',
+  'I run a company',
+  'Real estate in San Francisco',
+  'Talk to the concierge',
 ];
 
 const MAX_SESSION_MESSAGES = 20;
@@ -210,6 +211,19 @@ export const ChatWidget: React.FC = () => {
 
   const isAtSessionLimit = userMessageCount >= MAX_SESSION_MESSAGES;
 
+  // Lock background scroll on mobile when chat panel is open
+  useEffect(() => {
+    if (isOpen) {
+      const originalOverflow = document.body.style.overflow;
+      if (typeof window !== 'undefined' && window.innerWidth < 640) {
+        document.body.style.overflow = 'hidden';
+      }
+      return () => {
+        document.body.style.overflow = originalOverflow;
+      };
+    }
+  }, [isOpen]);
+
   return (
     <div className="font-sans antialiased">
       {/* Floating Chat Button */}
@@ -217,17 +231,21 @@ export const ChatWidget: React.FC = () => {
         <button
           onClick={() => setIsOpen(true)}
           aria-label="Open Black Label Concierge chat"
-          className="fixed bottom-6 right-6 z-50 flex items-center gap-3 px-4 py-3 bg-[#0a0b0e] text-[#faf8f5] border border-[#c5a059]/40 rounded-full shadow-[0_8px_30px_rgba(0,0,0,0.85)] hover:border-[#c5a059] hover:shadow-[0_8px_35px_rgba(197,160,89,0.35)] transition-all duration-300 group cursor-pointer"
+          className="fixed z-50 flex items-center gap-2.5 sm:gap-3 px-3.5 py-2.5 sm:px-4 sm:py-3 bg-[#0a0b0e] text-[#faf8f5] border border-[#c5a059]/40 rounded-full shadow-[0_8px_30px_rgba(0,0,0,0.85)] hover:border-[#c5a059] hover:shadow-[0_8px_35px_rgba(197,160,89,0.35)] transition-all duration-300 group cursor-pointer touch-manipulation active:scale-95"
+          style={{
+            bottom: 'max(1rem, env(safe-area-inset-bottom, 16px))',
+            right: 'max(1rem, env(safe-area-inset-right, 16px))',
+          }}
         >
-          <span className="relative flex h-3 w-3">
+          <span className="relative flex h-2.5 w-2.5 sm:h-3 sm:w-3">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#c5a059] opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-3 w-3 bg-[#c5a059]"></span>
+            <span className="relative inline-flex rounded-full h-2.5 w-2.5 sm:h-3 sm:w-3 bg-[#c5a059]"></span>
           </span>
-          <span className="font-serif text-sm tracking-wide group-hover:text-[#c5a059] transition-colors">
+          <span className="font-serif text-xs sm:text-sm tracking-wide group-hover:text-[#c5a059] transition-colors">
             Black Label Concierge
           </span>
           <svg
-            className="w-5 h-5 text-[#c5a059] transition-transform duration-200 group-hover:scale-110"
+            className="w-4 h-4 sm:w-5 sm:h-5 text-[#c5a059] transition-transform duration-200 group-hover:scale-110"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -249,36 +267,45 @@ export const ChatWidget: React.FC = () => {
           role="dialog"
           aria-modal="true"
           aria-label="Black Label Concierge chat panel"
-          className="fixed inset-0 sm:inset-auto sm:bottom-6 sm:right-6 sm:w-[380px] sm:h-[560px] z-50 flex flex-col bg-[#08090c] border border-[#c5a059]/30 sm:rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.95)] overflow-hidden"
+          className="fixed inset-0 sm:inset-auto sm:bottom-6 sm:right-6 sm:w-[400px] sm:h-[600px] sm:max-h-[85vh] h-[100dvh] max-h-[100dvh] z-50 flex flex-col bg-[#08090c] border border-[#c5a059]/30 sm:rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.95)] overflow-hidden"
+          style={{
+            paddingTop: 'env(safe-area-inset-top, 0px)',
+            paddingBottom: 'env(safe-area-inset-bottom, 0px)',
+          }}
         >
+          {/* Mobile Sheet Pull Bar Indicator */}
+          <div className="sm:hidden flex justify-center pt-2 pb-1 bg-[#0e1015]">
+            <span className="w-10 h-1 bg-white/20 rounded-full" />
+          </div>
+
           {/* Header */}
-          <div className="flex items-center justify-between px-5 py-3.5 bg-[#0e1015] border-b border-[#c5a059]/20 select-none">
+          <div className="flex items-center justify-between px-4 sm:px-5 py-3 sm:py-3.5 bg-[#0e1015] border-b border-[#c5a059]/20 select-none shrink-0">
             <div className="space-y-0.5">
-              <h2 className="text-base font-serif font-medium text-[#faf8f5] tracking-wide flex items-center gap-2">
-                Black Label Concierge
+              <h2 className="text-sm sm:text-base font-serif font-medium text-[#faf8f5] tracking-wide flex items-center gap-2">
+                Black Label Concierge Assistant
               </h2>
-              <div className="flex items-center gap-2 text-[11px] font-mono text-[#a69f91]">
+              <div className="flex items-center gap-2 text-[10px] sm:text-[11px] font-mono text-[#a69f91]">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                <span>Virtual Concierge · Online</span>
+                <span>Virtual Assistant · Millennium Tower</span>
               </div>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5 sm:gap-2">
               {/* New chat button */}
               <button
                 onClick={handleNewChat}
                 aria-label="New chat"
                 title="Reset conversation"
-                className="px-2 py-1 text-[11px] font-mono uppercase tracking-wider text-[#a69f91] hover:text-[#c5a059] rounded hover:bg-white/[0.04] transition-colors cursor-pointer"
+                className="px-2 py-1.5 sm:py-1 text-[11px] font-mono uppercase tracking-wider text-[#a69f91] hover:text-[#c5a059] active:text-[#faf8f5] rounded hover:bg-white/[0.04] transition-colors cursor-pointer touch-manipulation"
               >
                 New chat
               </button>
 
-              {/* Close button */}
+              {/* Close button with touch-friendly 40px target */}
               <button
                 onClick={() => setIsOpen(false)}
                 aria-label="Close concierge chat"
-                className="p-1.5 text-[#a69f91] hover:text-[#faf8f5] rounded-md hover:bg-white/[0.06] transition-colors cursor-pointer"
+                className="p-2 sm:p-1.5 min-w-[36px] min-h-[36px] flex items-center justify-center text-[#a69f91] hover:text-[#faf8f5] active:bg-white/[0.1] rounded-md hover:bg-white/[0.06] transition-colors cursor-pointer touch-manipulation"
               >
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
@@ -288,7 +315,7 @@ export const ChatWidget: React.FC = () => {
           </div>
 
           {/* Messages Scroll Area */}
-          <div className="flex-1 overflow-y-auto px-4 py-4 space-y-2 bg-gradient-to-b from-[#08090c] to-[#0b0c10] text-[#faf8f5]">
+          <div className="flex-1 overflow-y-auto px-3.5 sm:px-4 py-3 sm:py-4 space-y-2 bg-gradient-to-b from-[#08090c] to-[#0b0c10] text-[#faf8f5] overscroll-contain touch-pan-y">
             {messages.map((message) => (
               <ChatMessage key={message.id} message={message} onNavigate={handleNavigate} />
             ))}
@@ -296,15 +323,15 @@ export const ChatWidget: React.FC = () => {
             {/* Quick Reply Chips (shown under first message if only 1 message exists) */}
             {messages.length === 1 && !isLoading && (
               <div className="pt-2 pb-3 space-y-1.5">
-                <p className="text-[11px] font-mono uppercase tracking-wider text-[#a69f91] px-1">
+                <p className="text-[10px] sm:text-[11px] font-mono uppercase tracking-wider text-[#a69f91] px-1">
                   Suggested topics
                 </p>
-                <div className="flex flex-wrap gap-2">
+                <div className="flex gap-2 overflow-x-auto pb-1 sm:flex-wrap no-scrollbar -mx-1 px-1">
                   {QUICK_REPLY_CHIPS.map((chip, idx) => (
                     <button
                       key={idx}
                       onClick={() => handleSendMessage(chip)}
-                      className="px-3 py-1.5 text-xs font-sans text-[#faf8f5] bg-[#14161d] hover:bg-[#1f222d] border border-[#c5a059]/25 hover:border-[#c5a059]/60 rounded-full transition-all duration-200 text-left cursor-pointer"
+                      className="shrink-0 sm:shrink px-3 py-1.5 text-xs font-sans text-[#faf8f5] bg-[#14161d] active:bg-[#232734] sm:hover:bg-[#1f222d] border border-[#c5a059]/25 sm:hover:border-[#c5a059]/60 rounded-full transition-all duration-200 whitespace-nowrap sm:whitespace-normal text-left cursor-pointer touch-manipulation"
                     >
                       {chip}
                     </button>
@@ -320,7 +347,7 @@ export const ChatWidget: React.FC = () => {
                 {lastUserMessage && (
                   <button
                     onClick={() => handleSendMessage(lastUserMessage)}
-                    className="inline-flex items-center gap-1.5 text-[11px] font-mono uppercase tracking-wider text-[#c5a059] hover:underline cursor-pointer"
+                    className="inline-flex items-center gap-1.5 text-[11px] font-mono uppercase tracking-wider text-[#c5a059] hover:underline cursor-pointer touch-manipulation"
                   >
                     ↺ Retry last message
                   </button>
@@ -332,7 +359,12 @@ export const ChatWidget: React.FC = () => {
           </div>
 
           {/* Footer Input Area */}
-          <div className="p-3.5 bg-[#0a0b0e] border-t border-white/[0.08] space-y-2">
+          <div
+            className="p-3 sm:p-3.5 bg-[#0a0b0e] border-t border-white/[0.08] space-y-2 shrink-0"
+            style={{
+              paddingBottom: 'max(0.75rem, env(safe-area-inset-bottom, 12px))',
+            }}
+          >
             <div className="relative flex items-center">
               <textarea
                 ref={inputRef}
@@ -342,18 +374,18 @@ export const ChatWidget: React.FC = () => {
                 placeholder={
                   isAtSessionLimit
                     ? 'Session limit reached. Email concierge@blacklabel.life'
-                    : 'Ask about our 8 divisions or request services...'
+                    : 'Tell me what is taking up your time...'
                 }
                 disabled={isLoading || isAtSessionLimit}
                 rows={1}
-                className="w-full pl-3.5 pr-11 py-2.5 text-xs sm:text-sm text-[#faf8f5] bg-[#12141a] border border-white/10 rounded-xl focus:border-[#c5a059]/80 focus:outline-none placeholder-[#a69f91]/50 resize-none transition-colors disabled:opacity-50"
+                className="w-full pl-3.5 pr-12 py-2.5 text-base sm:text-sm text-[#faf8f5] bg-[#12141a] border border-white/10 rounded-xl focus:border-[#c5a059]/80 focus:outline-none placeholder-[#a69f91]/50 resize-none transition-colors disabled:opacity-50"
               />
 
               <button
                 onClick={() => handleSendMessage(inputText)}
                 disabled={!inputText.trim() || isLoading || isAtSessionLimit}
                 aria-label="Send message"
-                className="absolute right-2 p-1.5 text-[#060709] bg-[#c5a059] disabled:bg-[#c5a059]/30 disabled:text-white/30 rounded-lg hover:bg-[#dfc182] transition-colors cursor-pointer disabled:cursor-not-allowed"
+                className="absolute right-1.5 sm:right-2 p-2 sm:p-1.5 text-[#060709] bg-[#c5a059] disabled:bg-[#c5a059]/30 disabled:text-white/30 rounded-lg hover:bg-[#dfc182] active:scale-95 transition-all cursor-pointer disabled:cursor-not-allowed touch-manipulation"
               >
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.25" d="M5 12h14M12 5l7 7-7 7" />
@@ -362,7 +394,8 @@ export const ChatWidget: React.FC = () => {
             </div>
 
             <div className="flex items-center justify-between px-1 text-[10px] font-mono text-[#a69f91]/70">
-              <span>Shift+Enter for new line</span>
+              <span className="hidden sm:inline">Shift+Enter for new line</span>
+              <span className="sm:hidden">Black Label Concierge</span>
               <span>{inputText.length}/{MAX_CHAR_COUNT}</span>
             </div>
           </div>
